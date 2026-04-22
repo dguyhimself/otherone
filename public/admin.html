@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>APEX | Executive Terminal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #050b14; color: #f8fafc; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Auth Wall */
+        #auth-wall { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050b14; z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .auth-box { background: #0f172a; padding: 40px; border-radius: 12px; border: 1px solid #1e293b; text-align: center; width: 350px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .auth-box input { width: 100%; padding: 12px; margin-bottom: 20px; background: #1d273d; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; font-family: monospace; }
+        .auth-box button { width: 100%; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .auth-box button:hover { background: #2563eb; }
+
+        /* Layout */
+        .sidebar { width: 260px; background: #0f172a; border-right: 1px solid #1e293b; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #1e293b; font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; color: #f8fafc; }
+        .sidebar-header span { color: #3b82f6; }
+        .nav-item { padding: 15px 20px; cursor: pointer; border-left: 3px solid transparent; color: #94a3b8; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover, .nav-item.active { background: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; color: white; }
+        
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: #050b14; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        h2 { margin-top: 0; color: #f8fafc; font-weight: 600; font-size: 1.5rem; margin-bottom: 20px; }
+
+        /* Cards & Grids */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .kpi-card { background: #0f172a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .kpi-card h4 { margin: 0 0 10px 0; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; }
+        .kpi-card .val { font-size: 2rem; font-weight: bold; }
+        
+        /* Tables */
+        .data-table { width: 100%; border-collapse: collapse; background: #0f172a; border-radius: 8px; overflow: hidden; border: 1px solid #1e293b; }
+        .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
+        .data-table th { background: #1d273d; color: #94a3b8; text-transform: uppercase; font-size: 0.75rem; }
+        .data-table tr:hover { background: rgba(255,255,255,0.02); }
+        
+        /* Forms & Buttons */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #1d273d; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-green { background: #10b981; } .btn-green:hover { background: #059669; }
+        .btn-red { background: #ef4444; } .btn-red:hover { background: #dc2626; }
+        .btn-blue { background: #3b82f6; } .btn-blue:hover { background: #2563eb; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH WALL -->
+    <div id="auth-wall">
+        <div class="auth-box">
+            <h2><i class="fa-solid fa-lock" style="color:#3b82f6; margin-bottom:10px;"></i><br>Executive Terminal</h2>
+            <input type="password" id="admin-pass" placeholder="Enter Master Key">
+            <button onclick="authenticate()">Decrypt Access</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="sidebar hidden" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-layer-group"></i> <span>APEX</span> COMMAND</div>
+        <div class="nav-item active" onclick="switchTab('overview')"><i class="fa-solid fa-chart-line"></i> Macro Ledger</div>
+        <div class="nav-item" onclick="switchTab('withdrawals')"><i class="fa-solid fa-money-bill-transfer"></i> Liquidity Queue</div>
+        <div class="nav-item" onclick="switchTab('users')"><i class="fa-solid fa-users-gear"></i> User Subjugation</div>
+        <div class="nav-item" onclick="switchTab('fomo')"><i class="fa-solid fa-bullhorn"></i> FOMO Engine</div>
+        <div style="flex-grow:1;"></div>
+        <div class="nav-item" style="color:#ef4444; border-top:1px solid #1e293b;" onclick="window.location.reload()"><i class="fa-solid fa-power-off"></i> Lock Terminal</div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-content hidden" id="main-content">
+        
+        <!-- TAB: OVERVIEW -->
+        <div id="tab-overview" class="tab-content active">
+            <h2>System Overview</h2>
+            <div class="kpi-grid">
+                <div class="kpi-card"><h4>Real Capital Injected</h4><div class="val" id="kpi-in" style="color:#10b981;">$0.00</div></div>
+                <div class="kpi-card"><h4>Real Capital Extracted</h4><div class="val" id="kpi-out" style="color:#ef4444;">$0.00</div></div>
+                <div class="kpi-card"><h4>Platform Net Profit</h4><div class="val" id="kpi-net" style="color:#38bdf8;">$0.00</div></div>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card"><h4>Total System Liability (Fake)</h4><div class="val" id="kpi-liability" style="color:#f59e0b;">$0.00</div></div>
+                <div class="kpi-card"><h4>Total Registered Users</h4><div class="val" id="kpi-users">0</div></div>
+                <div class="kpi-card"><h4>Active Smart Contracts</h4><div class="val" id="kpi-nodes">0</div></div>
+            </div>
+        </div>
+
+        <!-- TAB: WITHDRAWALS -->
+        <div id="tab-withdrawals" class="tab-content">
+            <h2>Liquidity Queue (Pending Withdrawals)</h2>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-top:-15px; margin-bottom:20px;">Review high-volume requests. Approving logs it as paid (you must send crypto manually). Rejecting returns pixels to their balance.</p>
+            <table class="data-table">
+                <thead><tr><th>Date</th><th>Partner ID</th><th>Amount</th><th>Wallet Address</th><th>Action</th></tr></thead>
+                <tbody id="queue-body">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB: USER SUBJUGATION -->
+        <div id="tab-users" class="tab-content">
+            <h2>User Subjugation (God-Mode)</h2>
+            <div style="display:flex; gap:10px; max-width: 500px; margin-bottom: 30px;">
+                <input type="text" id="search-id" placeholder="Enter 6-Digit Partner ID">
+                <button class="btn btn-blue" onclick="findUser()"><i class="fa-solid fa-magnifying-glass"></i> Locate Target</button>
+            </div>
+
+            <div id="user-editor" class="hidden" style="background:#0f172a; padding:25px; border-radius:8px; border:1px solid #1e293b; max-width:600px;">
+                <h3 style="margin-top:0; border-bottom:1px solid #1e293b; padding-bottom:10px; color:#38bdf8;">Target Acquired: <span id="ed-name" style="color:white;"></span></h3>
+                <input type="hidden" id="ed-uid">
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div class="form-group"><label>Ledger Balance (Fake Pixels)</label><input type="number" id="ed-balance" step="0.01"></div>
+                    <div class="form-group"><label>Package Price Value</label><input type="number" id="ed-price" step="0.01"></div>
+                    <div class="form-group"><label>Agency Tier (Visual Name)</label><input type="text" id="ed-tier"></div>
+                    <div class="form-group"><label>Account Status</label>
+                        <select id="ed-ban">
+                            <option value="false">Active (Safe)</option>
+                            <option value="true">BANNED (Locked Out)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-red" style="width:100%; margin-top:10px;" onclick="executeUserOverride()"><i class="fa-solid fa-triangle-exclamation"></i> OVERRIDE ACCOUNT PARAMETERS</button>
+            </div>
+        </div>
+
+        <!-- TAB: FOMO ENGINE -->
+        <div id="tab-fomo" class="tab-content">
+            <h2>The FOMO Engine</h2>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-top:-15px; margin-bottom:20px;">Inject fake massive deposits into the master ledger. This inflates the "Real Capital Injected" metric to make the platform look highly liquid.</p>
+            
+            <div style="background:#0f172a; padding:25px; border-radius:8px; border:1px solid #1e293b; max-width:400px;">
+                <div class="form-group"><label>Fake Deposit Amount (USDT)</label><input type="number" id="fomo-amount" placeholder="e.g., 15000" value="15000"></div>
+                <div class="form-group"><label>Network Simulation</label>
+                    <select id="fomo-network">
+                        <option value="TRC20">Tron (TRC20)</option>
+                        <option value="BEP20">Binance Smart Chain (BEP20)</option>
+                        <option value="ERC20">Ethereum (ERC20)</option>
+                    </select>
+                </div>
+                <button class="btn btn-green" style="width:100%; margin-top:10px;" onclick="injectFOMO()"><i class="fa-solid fa-bolt"></i> INJECT FAKE LIQUIDITY</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let adminToken = '';
+        let adminPassword = ''; 
+
+        // --- NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if (tabId === 'overview' || tabId === 'withdrawals') fetchAdminData();
+        }
+
+        // --- AUTHENTICATION ---
+        async function authenticate() {
+            adminPassword = document.getElementById('admin-pass').value;
+            adminToken = localStorage.getItem('apex_token');
+            
+            if (!adminToken) {
+                alert("CRITICAL ERROR: No active user session detected. Log in as a regular user in this browser first to establish a secure JWT session.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/overview', { 
+                    headers: { 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword } 
+                });
+
+                if (res.ok) {
+                    document.getElementById('auth-wall').classList.add('hidden');
+                    document.getElementById('sidebar').classList.remove('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                    fetchAdminData();
+                } else {
+                    alert("ACCESS DENIED: Invalid Master Key.");
+                }
+            } catch (err) { alert("Server offline."); }
+        }
+
+        // --- DATA FETCHING ---
+        async function fetchAdminData() {
+            const res = await fetch('/api/admin/overview', { headers: { 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword } });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            // Paint KPI Ledger
+            const totalIn = parseFloat(data.totals.total_real_injected);
+            const totalOut = parseFloat(data.totals.total_real_extracted);
+            const netProfit = totalIn - totalOut;
+
+            document.getElementById('kpi-in').innerText = `$${totalIn.toFixed(2)}`;
+            document.getElementById('kpi-out').innerText = `$${totalOut.toFixed(2)}`;
+            document.getElementById('kpi-net').innerText = `$${netProfit.toFixed(2)}`;
+            document.getElementById('kpi-liability').innerText = `$${parseFloat(data.totals.total_system_liability).toFixed(2)}`;
+            document.getElementById('kpi-users').innerText = data.totals.total_users;
+            document.getElementById('kpi-nodes').innerText = data.totals.active_nodes;
+
+            // Paint Withdrawal Queue
+            const queueBody = document.getElementById('queue-body');
+            queueBody.innerHTML = '';
+            
+            if (data.pending_withdrawals.length === 0) {
+                queueBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">Queue empty. No pending requests.</td></tr>';
+            } else {
+                data.pending_withdrawals.forEach(wd => {
+                    const date = new Date(wd.created_at).toLocaleString();
+                    queueBody.innerHTML += `
+                        <tr>
+                            <td style="color:#94a3b8; font-size:0.8rem;">${date}</td>
+                            <td style="font-weight:bold;">${wd.users.name} <span style="color:#38bdf8;">(${wd.users.my_partner_id})</span></td>
+                            <td style="color:#ef4444; font-weight:bold; font-size:1.1rem;">$${parseFloat(wd.amount).toFixed(2)}</td>
+                            <td style="font-family:monospace; color:#10b981;">${wd.wallet_address}</td>
+                            <td>
+                                <button class="btn btn-green" onclick="processWD('${wd.id}', 'approve')">Mark Paid</button>
+                                <button class="btn btn-red" onclick="processWD('${wd.id}', 'reject')">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // --- WITHDRAWAL PROCESSING ---
+        async function processWD(id, action) {
+            if (!confirm(`Execute ${action.toUpperCase()} on this withdrawal?`)) return;
+            const res = await fetch('/api/admin/process-withdrawal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword },
+                body: JSON.stringify({ withdrawalId: id, action: action })
+            });
+            alert((await res.json()).message || "Action processed.");
+            fetchAdminData();
+        }
+
+        // --- USER SUBJUGATION ---
+        async function findUser() {
+            const partnerId = document.getElementById('search-id').value;
+            const res = await fetch(`/api/admin/find-user/${partnerId}`, { headers: { 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword } });
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById('ed-name').innerText = `${user.name} (${user.my_partner_id})`;
+                document.getElementById('ed-uid').value = user.id;
+                document.getElementById('ed-balance').value = user.balance;
+                document.getElementById('ed-tier').value = user.agency_tier || 'None';
+                document.getElementById('ed-price').value = user.package_price || 0;
+                document.getElementById('ed-ban').value = user.is_banned ? "true" : "false";
+                document.getElementById('user-editor').classList.remove('hidden');
+            } else { alert("Target not found."); }
+        }
+
+        async function executeUserOverride() {
+            if(!confirm("WARNING: You are altering core database variables. Proceed?")) return;
+            const payload = {
+                userId: document.getElementById('ed-uid').value,
+                newBalance: document.getElementById('ed-balance').value,
+                newTier: document.getElementById('ed-tier').value,
+                newPrice: document.getElementById('ed-price').value,
+                banStatus: document.getElementById('ed-ban').value === "true"
+            };
+            const res = await fetch('/api/admin/update-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword },
+                body: JSON.stringify(payload)
+            });
+            alert((await res.json()).message || "Override applied.");
+        }
+
+        // --- FOMO INJECTOR ---
+        async function injectFOMO() {
+            const amount = document.getElementById('fomo-amount').value;
+            const network = document.getElementById('fomo-network').value;
+            if(!confirm(`Inject $${amount} of FAKE volume into the master ledger?`)) return;
+            
+            const res = await fetch('/api/admin/inject-fomo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}`, 'admin-password': adminPassword },
+                body: JSON.stringify({ amount, network })
+            });
+            alert((await res.json()).message || "FOMO Injected.");
+            fetchAdminData();
+        }
+    </script>
+</body>
+</html>
