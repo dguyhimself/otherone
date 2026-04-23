@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Critical for mobile: prevents auto-zooming on inputs and scales properly -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Agency Login</title>
-    <!-- Icons & Fonts -->
+    <title>Apply for Agency Node</title>
+    <!-- Modern Font -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- intl-tel-input CSS for the phone dropdown -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/css/intlTelInput.css">
     <style>
         :root {
-            /* Neutral Dark Grays instead of Slate/Blue-gray */
             --bg-color: #09090b;
             --card-bg: rgba(24, 24, 27, 0.7);
             --border-color: #27272a;
-
-            /* Orange Theme */
             --primary: #f97316;
             --primary-hover: #ea580c;
             --primary-gradient: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
-
             --text-main: #fafafa;
             --text-muted: #a1a1aa;
             --input-bg: rgba(24, 24, 27, 0.9);
@@ -35,7 +32,25 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Warm animated background */
+        /* Phone Input Library Dark Mode Overrides */
+        .iti { width: 100%; display: block; }
+        .iti__flag-container { z-index: 5; }
+        .iti__selected-flag { background-color: transparent !important; border-radius: 12px 0 0 12px; padding: 0 16px; }
+        .iti__country-list { 
+            background-color: var(--input-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            backdrop-filter: blur(10px);
+            white-space: normal;
+            z-index: 100; /* This is the fix */
+        }
+        .iti__country.iti__highlight { background-color: rgba(249, 115, 22, 0.2); }
+        .iti__country-name { color: var(--text-main); font-size: 0.9rem; }
+        .iti__dial-code { color: var(--text-muted); font-size: 0.9rem;}
+        .iti__divider { border-bottom: 1px solid var(--border-color); }
+
+        /* 1. REPLACE your existing body { ... } with this animated premium background */
         body {
             background: linear-gradient(-45deg, #110500, #2a0a00, #050200, #000000);
             background-size: 400% 400%;
@@ -71,18 +86,6 @@
             margin-bottom: 30px;
         }
 
-        .brand-logo {
-            max-width: 190px;
-            height: auto;
-            display: block;
-            margin: 0 auto 5px auto;
-            margin-top: -45px;
-            margin-bottom: -10px;
-            filter: invert(100%) brightness(200%);
-            /* Orange glow */
-            drop-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); 
-        }
-
         .header h2 {
             font-size: 1.75rem;
             font-weight: 700;
@@ -98,8 +101,17 @@
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            margin-left: 4px;
         }
 
         input {
@@ -114,16 +126,19 @@
             outline: none;
         }
 
-        input::placeholder { color: #52525b; } /* Neutral gray */
+        input::placeholder {
+            color: #52525b;
+        }
 
         input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15); /* Orange shadow */
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
         }
 
+        /* iOS Style Segmented Control for Toggle */
         .toggle-switch {
             display: flex;
-            background: #18181b; /* Neutral dark gray */
+            background: #18181b;
             border-radius: 12px;
             padding: 4px;
             margin-bottom: 20px;
@@ -148,7 +163,102 @@
         .toggle-btn.active {
             color: white;
             background: var(--primary-gradient);
-            box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3); /* Orange shadow */
+            box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Partner ID specific styling */
+        #partnerId {
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        
+        #partnerId:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+        }
+
+        /* --- START: NEW Custom Checkbox CSS --- */
+        .checkbox-group {
+            display: block;
+            position: relative;
+            padding-left: 32px; /* Makes space for our custom checkbox */
+            margin-bottom: 24px;
+            margin-top: 12px;
+            cursor: pointer;
+            user-select: none; /* Prevents text selection when clicking label */
+        }
+
+        /* Hide the browser's default checkbox */
+        .checkbox-group input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create the custom checkbox box using the label's ::before pseudo-element */
+        .checkbox-group label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        /* On hover, highlight the border */
+        .checkbox-group:hover label::before {
+            border-color: var(--primary);
+        }
+
+        /* When the real checkbox is checked, style our custom one */
+        .checkbox-group input:checked + label::before {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        /* Create the checkmark icon using the label's ::after pseudo-element */
+        .checkbox-group label::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 50%;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: translateY(-60%) rotate(45deg);
+            opacity: 0; /* Hide it by default */
+            transition: opacity 0.2s ease;
+        }
+
+        /* Show the checkmark when the real checkbox is checked */
+        .checkbox-group input:checked + label::after {
+            opacity: 1;
+        }
+        /* --- END: NEW Custom Checkbox CSS --- */
+
+        .checkbox-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .checkbox-group label a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .checkbox-group label a:hover {
+            text-decoration: underline;
         }
 
         button[type="submit"] {
@@ -162,13 +272,16 @@
             font-size: 1rem;
             border-radius: 12px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); /* Orange shadow */
-            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
         }
 
         button[type="submit"]:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6); /* Orange shadow */
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
         }
 
         .error {
@@ -183,7 +296,9 @@
             display: none;
         }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         .footer-text {
             font-size: 0.9rem;
@@ -198,6 +313,22 @@
             font-weight: 600;
         }
 
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 16px;
+                border: none; /* Maximize space on small screens */
+            }
+            input {
+                padding: 16px; /* Larger tap targets for fat fingers */
+            }
+        }
+        /* 3. ADD these new styles for the icons and phone dropdown at the bottom of your CSS */
         .input-icon-wrapper {
             position: relative;
             display: flex;
@@ -208,16 +339,28 @@
         .input-icon-wrapper i {
             position: absolute;
             left: 16px;
-            color: #71717a; /* Neutral gray */
+            color: #71717a;
             font-size: 1rem;
             transition: 0.3s ease;
             z-index: 5;
         }
 
-        /* Adjust padding for both left icon and right eye icon */
-        .input-icon-wrapper input { 
+        /* Pushes text away from both left (icon) and right (eye toggle) */
+        .input-icon-wrapper input {
             padding-left: 44px; 
             padding-right: 44px;
+        }
+
+        /* Styling for the clickable Eye Icon */
+        .input-icon-wrapper .toggle-password {
+            left: auto;
+            right: 16px;
+            cursor: pointer;
+            pointer-events: auto; /* Makes it clickable */
+        }
+
+        .input-icon-wrapper .toggle-password:hover {
+            color: var(--text-main); /* Lights up when hovered */
         }
 
         .input-icon-wrapper input:focus + i,
@@ -225,41 +368,46 @@
             color: var(--primary);
         }
 
-        /* Eye Toggle Icon Styling */
-        .input-icon-wrapper .toggle-password {
-            left: auto;
-            right: 16px;
-            cursor: pointer;
-            pointer-events: auto;
+        .phone-container {
+            display: flex;
+            gap: 8px;
+            width: 100%;
         }
 
-        .input-icon-wrapper .toggle-password:hover {
+        .country-select {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
             color: var(--text-main);
+            border-radius: 12px;
+            padding: 0 10px;
+            outline: none;
+            font-size: 0.9rem;
+            width: 100px;
+            cursor: pointer;
+            text-align: center;
         }
 
-        /* --- Phone Input Library Overrides --- */
-        .iti { width: 100%; display: block; }
-        .iti__flag-container { z-index: 5; }
-        .iti__selected-flag { background-color: transparent !important; border-radius: 12px 0 0 12px; padding: 0 16px; }
-        .iti__country-list { 
-            background-color: var(--input-bg); 
-            border: 1px solid var(--border-color); 
-            border-radius: 12px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-            backdrop-filter: blur(10px);
-            white-space: normal;
-            z-index: 100;
+        .country-select:focus {
+            border-color: var(--primary);
         }
-        .iti__country.iti__highlight { background-color: rgba(249, 115, 22, 0.2); } /* Orange highlight */
-        .iti__country-name { color: var(--text-main); font-size: 0.9rem; }
-        .iti__dial-code { color: var(--text-muted); font-size: 0.9rem;}
-        .iti__divider { border-bottom: 1px solid var(--border-color); }
-
+        .brand-logo {
+            max-width: 190px; /* Optimal size for mobile viewing */
+            height: auto;
+            display: block;
+            margin: 0 auto 5px auto; /* Centers it perfectly above the text */
+            margin-top: -45px;
+            margin-bottom: -10px;
+            /* THIS IS THE HACK: Turns a pure black PNG into pure white instantly */
+            filter: invert(100%) brightness(200%);
+            /* Adds a subtle premium glow to the logo */
+            drop-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); 
+        }
+        /* THIS IS THE DEFINITIVE FIX for the dropdown z-index */
         #group-phone {
+            /* Elevate this specific group so its dropdown can overlap siblings */
             z-index: 20; 
         }
-
-        /* --- Floating Actions (Language & Support) --- */
+        /* --- START: Floating Actions (Language & Support) --- */
         .floating-actions {
             position: fixed;
             top: 20px;
@@ -295,13 +443,13 @@
         .lang-dropdown {
             position: absolute;
             top: 55px;
-            right: 0; 
+            right: 0; /* Aligns to the right edge so it doesn't go off-screen */
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             width: 180px;
-            max-height: 350px; 
-            overflow-y: auto; 
+            max-height: 350px; /* Crucial for mobile - forces a scrollable area */
+            overflow-y: auto; /* Enables vertical scrolling */
             display: none;
             flex-direction: column;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
@@ -309,6 +457,7 @@
             z-index: 1000;
         }
 
+        /* Custom Scrollbar for the language dropdown */
         .lang-dropdown::-webkit-scrollbar {
             width: 6px;
         }
@@ -329,30 +478,118 @@
             animation: fadeIn 0.2s ease;
         }
 
-        .lang-option {
-            padding: 12px 16px;
-            color: var(--text-main);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-align: left;
-        }
-
-        .lang-option:hover {
-            background: rgba(249, 115, 22, 0.2); /* Orange hover */
-            color: white;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hide Google Translate artifacts */
+        /* Brutally hide the default Google Translate banner & artifacts */
         .skiptranslate { display: none !important; }
         body { top: 0px !important; }
         .goog-te-banner-frame { display: none !important; }
+        /* Fix RTL inputs overlapping icons */
+        body[dir="rtl"] .input-icon-wrapper .toggle-password { right: auto; left: 16px; }
+        body[dir="rtl"] .input-icon-wrapper i {
+            left: auto;
+            right: 16px;
+        }
+        body[dir="rtl"] .input-icon-wrapper input {
+            padding-left: 16px;
+            padding-right: 44px;
+        }
+        body[dir="rtl"] .checkbox-group { padding-left: 0; padding-right: 32px; }
+        body[dir="rtl"] .checkbox-group label::before { left: auto; right: 0; }
+        body[dir="rtl"] .checkbox-group label::after { left: auto; right: 7px; }
+        /* --- END: Floating Actions --- */
+        /* --- START: Legal Modals CSS --- */
+        .legal-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 10000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .legal-modal-overlay.show {
+            display: flex; opacity: 1; animation: modalFadeIn 0.3s forwards;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .legal-modal {
+            background: var(--input-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; width: 90%; max-width: 600px; max-height: 85vh;
+            display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+        }
+        .legal-modal-header {
+            padding: 20px 24px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(24, 24, 27, 0.95); border-radius: 16px 16px 0 0;
+        }
+        .legal-modal-header h3 { margin: 0; color: var(--text-main); font-size: 1.2rem; }
+        .legal-close { 
+            background: transparent; border: none; color: var(--text-muted); 
+            font-size: 1.5rem; cursor: pointer; transition: 0.2s; padding: 0; box-shadow: none; width: auto;
+        }
+        .legal-close:hover { color: var(--error); transform: none; }
+        .legal-modal-body {
+            padding: 24px; overflow-y: auto; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;
+        }
+        .legal-modal-body h4 { color: var(--text-main); margin: 20px 0 8px 0; font-size: 1rem; }
+        .legal-modal-body p { margin-bottom: 12px; }
+        .legal-modal-body ul { margin-bottom: 15px; padding-left: 20px; }
+        .legal-modal-body li { margin-bottom: 5px; }
 
+        /* Custom Scrollbar for Modal */
+        .legal-modal-body::-webkit-scrollbar { width: 6px; }
+        .legal-modal-body::-webkit-scrollbar-track { background: transparent; margin: 10px 0;}
+        .legal-modal-body::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        .legal-modal-body::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        /* --- END: Legal Modals CSS --- */
+        
+        /* --- AUTO LIGHT/DARK MODE DETECTION --- */
+        @media (prefers-color-scheme: light) {
+            /* 1. Swap main variables to light/white theme */
+            :root {
+                --bg-color: #f4f4f5;
+                --card-bg: rgba(255, 255, 255, 0.85);
+                --border-color: #e4e4e7;
+                --text-main: #18181b;
+                --text-muted: #71717a;
+                --input-bg: rgba(255, 255, 255, 0.9);
+            }
+
+            /* 2. Change the animated background to bright, warm tones */
+            body {
+                background: linear-gradient(-45deg, #ffffff, #fff7ed, #f4f4f5, #ffedd5);
+                background-size: 400% 400%;
+            }
+
+            /* Loader Light Mode Fixes */
+            .loader-overlay { background: rgba(255, 255, 255, 0.85); }
+            .loader-ring::after { border-left-color: #d4d4d8; border-right-color: #d4d4d8; }
+
+            /* 3. Soften the heavy dark-mode shadows so they look natural on white */
+            .container, .legal-modal, .lang-dropdown, .iti__country-list, .action-btn {
+                box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08);
+            }
+
+            /* 4. Stop inverting the logo so it appears black instead of white */
+            .brand-logo {
+                filter: none;
+                drop-shadow: 0 4px 15px rgba(249, 115, 22, 0.15);
+            }
+
+            /* 5. Override the hardcoded dark grays */
+            .toggle-switch { background: #f4f4f5; }
+            input::placeholder { color: #a1a1aa; }
+            .input-icon-wrapper i { color: #a1a1aa; }
+
+            /* 6. Clean up Modals & Scrollbars for light mode */
+            .legal-modal-overlay { background: rgba(255, 255, 255, 0.85); }
+            .legal-modal-header { background: rgba(250, 250, 250, 0.95); }
+            .legal-modal-body::-webkit-scrollbar-thumb { background: #d4d4d8; }
+            .lang-dropdown::-webkit-scrollbar-thumb { background: #d4d4d8; }
+        }
         /* --- START: MODERN LOADER CSS --- */
         .loader-overlay {
             position: fixed;
@@ -360,7 +597,7 @@
             background: rgba(9, 9, 11, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            display: none;
+            display: none; /* Hidden by default */
             justify-content: center;
             align-items: center;
             z-index: 99999;
@@ -380,6 +617,7 @@
             position: relative;
         }
 
+        /* Futuristic dual-spinning rings */
         .loader-ring {
             position: relative;
             width: 100px;
@@ -411,6 +649,7 @@
             animation: spinReverse 1s linear infinite;
         }
 
+        /* Pulsing Node Icon inside the ring */
         .loader-icon {
             font-size: 2rem;
             color: var(--primary);
@@ -432,47 +671,6 @@
         @keyframes pulseIcon { 0%, 100% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         @keyframes pulseText { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
         /* --- END: MODERN LOADER CSS --- */
-
-        /* RTL Layout Fixes */
-        body[dir="rtl"] .input-icon-wrapper i { left: auto; right: 16px; }
-        body[dir="rtl"] .input-icon-wrapper input { padding-left: 16px; padding-right: 44px; }
-        body[dir="rtl"] .input-icon-wrapper .toggle-password { right: auto; left: 16px; }
-
-        /* --- AUTO LIGHT/DARK MODE DETECTION --- */
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg-color: #f4f4f5;
-                --card-bg: rgba(255, 255, 255, 0.85);
-                --border-color: #e4e4e7;
-                --text-main: #18181b;
-                --text-muted: #71717a;
-                --input-bg: rgba(255, 255, 255, 0.9);
-            }
-
-            body {
-                background: linear-gradient(-45deg, #ffffff, #fff7ed, #f4f4f5, #ffedd5);
-                background-size: 400% 400%;
-            }
-
-            .container, .lang-dropdown, .iti__country-list, .action-btn {
-                box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08);
-            }
-
-            .brand-logo {
-                filter: none;
-                drop-shadow: 0 4px 15px rgba(249, 115, 22, 0.15);
-            }
-
-            .toggle-switch { background: #f4f4f5; }
-            input::placeholder { color: #a1a1aa; }
-            .input-icon-wrapper i { color: #a1a1aa; }
-            .lang-dropdown::-webkit-scrollbar-thumb { background: #d4d4d8; }
-            .lang-option:hover { color: #18181b; }
-
-            /* Loader Light Mode Fixes */
-            .loader-overlay { background: rgba(255, 255, 255, 0.85); }
-            .loader-ring::after { border-left-color: #d4d4d8; border-right-color: #d4d4d8; }
-        }
         /* --- TELEGRAM SUPPORT MODAL UI --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -509,15 +707,18 @@
     </style>
 </head>
 <body>
+
     <!-- Modern Full-Screen Loader -->
     <div id="loaderOverlay" class="loader-overlay">
         <div class="loader-container">
             <div class="loader-ring">
+                <!-- Glowing Node Icon for the center -->
                 <i class="fa-solid fa-circle-nodes loader-icon"></i>
             </div>
-            <div class="loader-text" id="loaderText">Initiating handshake...</div>
+            <div class="loader-text" id="loaderText">Initiating connection...</div>
         </div>
     </div>
+
     <!-- Floating Action Icons -->
     <div class="floating-actions">
         <!-- Language Selector -->
@@ -550,7 +751,6 @@
                 <div class="lang-option" onclick="translatePage('zh-TW')">🇹🇼 繁体中文</div>
             </div>
         </div>
-
         <!-- Support Button -->
         <div class="action-btn" onclick="openSupportModal()" title="Official Telegram Support">
             <i class="fa-brands fa-telegram" style="color: #0088cc;"></i>
@@ -560,17 +760,27 @@
     <!-- Hidden Native Google Translate Element -->
     <div id="google_translate_element" style="display:none;"></div>
 
+    <!-- Hidden Native Google Translate Element -->
+    <div id="google_translate_element" style="display:none;"></div>
+
     <div class="container">
         <div class="header">
-            <!-- Use the same logo as the signup page -->
+            <!-- Replace 'your-logo.png' with the actual path to your image file -->
             <img src="logo.png" alt="PrimeNets" class="brand-logo">
 
-            <h2>Login</h2>
-            <p>Connect to your agency node</p>
+            <h2>Signup</h2>
+            <p>Create your PrimeNets account</p>
         </div>
 
-        <form id="loginForm">
+        <form id="signupForm">
             <div id="errMsg" class="error"></div>
+
+            <div class="input-group">
+                <div class="input-icon-wrapper">
+                    <input type="text" id="name" placeholder="Full Name" required>
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
 
             <div class="toggle-switch">
                 <div class="toggle-btn active" id="btn-email" onclick="toggleContact('email')">Email</div>
@@ -579,30 +789,111 @@
 
             <div class="input-group" id="group-email">
                 <div class="input-icon-wrapper">
-                    <input type="email" id="email" placeholder="name@domain.com">
+                    <input type="email" id="email" placeholder="yourname@gmail.com">
                     <i class="fa-solid fa-envelope"></i>
                 </div>
             </div>
 
             <div class="input-group hidden" id="group-phone">
+                <!-- Library handles the country code and flag automatically -->
                 <input type="tel" id="phone" placeholder="Phone Number">
             </div>
 
             <div class="input-group">
                 <div class="input-icon-wrapper">
-                    <input type="password" id="password" placeholder="Password" required>
+                    <input type="password" id="password" placeholder="Create Password" required>
                     <i class="fa-solid fa-lock left-icon"></i>
                     <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
                 </div>
             </div>
 
-            <button type="submit">Login</button>
+            <div class="input-group">
+                <div class="input-icon-wrapper">
+                    <input type="password" id="verifyPassword" placeholder="Confirm Password" required>
+                    <i class="fa-solid fa-shield-halved left-icon"></i>
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('verifyPassword', this)"></i>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="partnerId">Partner / Referral Code</label>
+                <div class="input-icon-wrapper">
+                    <input type="text" id="partnerId" placeholder="Enter ID (Required)" required>
+                    <i class="fa-solid fa-id-badge"></i>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">I agree to the <a href="#" onclick="openLegal('tos', event)">Terms of Service</a> & <a href="#" onclick="openLegal('privacy', event)">Privacy Policy</a>.</label>
+            </div>
+
+            <button type="submit">Signup</button>
 
             <div class="footer-text">
-                Need a node? <a href="/signup">Signup Here</a>
+                Already a partner? <a href="/login">Sign In</a>
             </div>
         </form>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
+    <!-- --- START: LEGAL MODALS --- -->
+    <!-- Terms of Service Modal -->
+    <div id="tosModal" class="legal-modal-overlay" onclick="closeLegalOnBgClick(event, 'tosModal')">
+        <div class="legal-modal">
+            <div class="legal-modal-header">
+                <h3>Terms of Service & Partnership Agreement</h3>
+                <button class="legal-close" onclick="closeLegal('tosModal')">&times;</button>
+            </div>
+            <div class="legal-modal-body">
+                <p>Welcome to PrimeNets Global. By registering a Node and accessing our proprietary API arbitrage infrastructure, you agree to be bound by the following corporate terms.</p>
+
+                <h4>1. Node Deployment & Liquidity</h4>
+                <p>PrimeNets provides digital agency nodes that facilitate high-frequency e-commerce arbitrage. Capital deposited into nodes is utilized as active liquidity to execute cross-border supply chain acquisitions. Yields are generated purely from successful market latency flips.</p>
+
+                <h4>2. Volatility & Risk Assumption</h4>
+                <p>Global trade is subject to macroeconomic volatility. Users acknowledge that digital logistics inherently carry risks. PrimeNets utilizes advanced predictive algorithms to mitigate loss, but past arbitrage performance is not indicative of future yields.</p>
+
+                <h4>3. Withdrawal Capacity & Compliance</h4>
+                <p>To prevent platform liquidity shocks and adhere to international Anti-Money Laundering (AML) directives, withdrawal velocity is restricted based on your Node's Class capacity. Tier 1 nodes are subject to volume ceilings. Expanding your syndicate network may be required to authorize high-volume liquidity extraction.</p>
+
+                <h4>4. Force Majeure (Liability Waiver)</h4>
+                <p>PrimeNets shall not be held liable for any degradation of capital, pause in daily yields, or restriction of withdrawals caused by events beyond our direct corporate control. These events include, but are not limited to:</p>
+                <ul>
+                    <li>Sovereign regulatory actions, API embargoes, or blockchain network congestion.</li>
+                    <li>International freight blockades or global supply chain failures.</li>
+                    <li>Acts of God, natural disasters, or major geopolitical unrest impacting supplier nodes (e.g., in Shenzhen, Guangzhou).</li>
+                </ul>
+                <p>In the event of Force Majeure, PrimeNets reserves the right to temporarily suspend operations to protect core system liquidity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="legal-modal-overlay" onclick="closeLegalOnBgClick(event, 'privacyModal')">
+        <div class="legal-modal">
+            <div class="legal-modal-header">
+                <h3>Privacy & Data Policy</h3>
+                <button class="legal-close" onclick="closeLegal('privacyModal')">&times;</button>
+            </div>
+            <div class="legal-modal-body">
+                <p>PrimeNets adheres to strict global data protection standards (GDPR compliant) to ensure the security of our Agency Partners.</p>
+
+                <h4>1. Information We Collect</h4>
+                <p>To establish your secure node, we collect fundamental cryptographic and identification data, including your registered name, encrypted contact credentials, and TRC20/EVM blockchain wallet addresses used for automated settlements.</p>
+
+                <h4>2. End-to-End Encryption</h4>
+                <p>All database transmissions, including password hashes and private ledger balances, are secured using military-grade AES-256 encryption. We do not store plain-text passwords.</p>
+
+                <h4>3. Third-Party Disclosure</h4>
+                <p>PrimeNets operates a closed-loop ecosystem. Your personal data and financial volume metrics will never be sold or distributed to third-party advertising agencies. Data is only shared with our verified 3PL (Third-Party Logistics) API partners strictly for the execution of your node's arbitrage orders.</p>
+
+                <h4>4. Identity Verification (KYC)</h4>
+                <p>As a regulated entity, PrimeNets reserves the right to request standard Know Your Customer (KYC) documentation prior to approving large-volume liquidity extractions to prevent illicit activity.</p>
+            </div>
+        </div>
+    </div>
+    <!-- --- END: LEGAL MODALS --- -->
     <!-- Support / Telegram Modal -->
     <div id="support-modal" class="modal-overlay hidden">
         <div class="modal">
@@ -627,12 +918,9 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
-
     <script>
         let contactType = 'email';
 
-        // --- Initialize International Phone Input ---
         const phoneInputField = document.querySelector("#phone");
         const iti = window.intlTelInput(phoneInputField, {
             initialCountry: "auto",
@@ -643,10 +931,10 @@
                     .catch(() => callback("us"));
             },
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js",
-            separateDialCode: true
+            separateDialCode: true // Displays the +XX code cleanly next to the flag
         });
 
-        // --- Toggle Logic for Email/Phone ---
+        // Toggle contact input fields smoothly
         function toggleContact(type) {
             contactType = type;
             const emailGroup = document.getElementById('group-email');
@@ -667,61 +955,82 @@
             }
         }
 
+        // Auto-fill and lock partner ID if passed in URL
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('partner');
+            if (refCode) {
+                const partnerInput = document.getElementById('partnerId');
+                partnerInput.value = refCode;
+                partnerInput.readOnly = true; 
+                partnerInput.style.opacity = "0.7";
+                partnerInput.style.cursor = "not-allowed";
+            }
+        });
+
+        // Form submission handling
         // --- Password Visibility Toggle ---
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
                 iconElement.classList.remove('fa-eye');
-                iconElement.classList.add('fa-eye-slash');
+                iconElement.classList.add('fa-eye-slash'); // Changes icon to crossed-out eye
             } else {
                 input.type = 'password';
                 iconElement.classList.remove('fa-eye-slash');
-                iconElement.classList.add('fa-eye');
+                iconElement.classList.add('fa-eye'); // Changes back to normal eye
             }
         }
-        
-        // --- Form Submission Logic ---
-        // --- Form Submission Logic with Modern Loader ---
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        // Form submission handling with Modern Loader
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const errDiv = document.getElementById('errMsg');
-            errDiv.style.display = 'none';
 
-            let contactValue;
+            const errMsg = document.getElementById('errMsg');
+            errMsg.style.display = 'none';
 
-            if (contactType === 'email') {
-                contactValue = document.getElementById('email').value.trim();
-            } else {
-                contactValue = iti.getNumber();
-                if (!iti.isValidNumber() && contactValue) {
-                    showError("The phone number is not valid.");
-                    return;
+            const emailValue = document.getElementById('email').value.trim();
+            const phoneValue = document.getElementById('phone').value.trim();
+            const pass1 = document.getElementById('password').value;
+            const pass2 = document.getElementById('verifyPassword').value;
+
+            const fullPhone = iti.getNumber(); 
+
+            // Validation
+            if (contactType === 'email' && !emailValue) { 
+                showError("Please enter a valid email address."); return; 
+            }
+            if (contactType === 'phone') {
+                if (!fullPhone || !iti.isValidNumber()) {
+                    showError("Please enter a valid phone number for your country."); return;
                 }
             }
-
-            if (!contactValue) {
-                showError(`Please enter your ${contactType}.`);
-                return;
+            if (pass1 !== pass2) {
+                showError("Passwords do not match."); return;
             }
 
             const data = {
-                contact: contactValue,
-                password: document.getElementById('password').value
+                name: document.getElementById('name').value.trim(),
+                email: contactType === 'email' ? emailValue : `${fullPhone.replace('+', '')}@primenets.global`,
+                phone: contactType === 'phone' ? fullPhone : null,
+                password: pass1,
+                verifyPassword: pass2,
+                partnerId: document.getElementById('partnerId').value.trim()
             };
 
             // --- START LOADER SEQUENCE ---
             const loaderOverlay = document.getElementById('loaderOverlay');
             const loaderText = document.getElementById('loaderText');
 
+            // Show the loader overlay
             loaderOverlay.classList.add('active');
 
-            // Login specific phrases
+            // Cycle through dynamic hacking/connecting text
             const loadingPhases =[
-                "Logging In...",
+                "Singing up...",
             ];
             let phase = 0;
-            loaderText.innerText = "Logging In...";
+            loaderText.innerText = "Singing up...";
 
             const textInterval = setInterval(() => {
                 loaderText.innerText = loadingPhases[phase];
@@ -729,8 +1038,9 @@
             }, 1200);
             // --- END LOADER SEQUENCE ---
 
+            // Execution
             try {
-                const res = await fetch('/api/login', {
+                const res = await fetch('/api/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -739,20 +1049,51 @@
                 const result = await res.json();
 
                 if (res.ok) {
-                    localStorage.setItem('apex_token', result.token);
+                    clearInterval(textInterval);
 
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1500);
+                    // Check if the backend returned the token directly during signup
+                    let finalToken = result.token;
+
+                    // If the backend didn't return the token, silently log them in right now
+                    if (!finalToken) {
+                        try {
+                            const authReq = await fetch('/api/login', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ 
+                                    contact: contactType === 'email' ? data.email : data.phone, 
+                                    password: data.password 
+                                })
+                            });
+                            const authRes = await authReq.json();
+                            finalToken = authRes.token;
+                        } catch (e) {
+                            console.error("Auto-login failed:", e);
+                        }
+                    }
+
+                    // If we successfully grabbed the token, inject it and route to dashboard
+                    if (finalToken) {
+                        localStorage.setItem('apex_token', finalToken);
+                        loaderText.innerText = "Signup Successful";
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1200);
+                    } else {
+                        // Absolute fallback if backend rejects the auto-login
+                        window.location.href = '/login';
+                    }
                 } else {
+                    // Hide loader and show error
                     clearInterval(textInterval);
                     loaderOverlay.classList.remove('active');
-                    showError(result.error || "Authentication failed.");
+                    showError(result.error || "Registration failed. Try again.");
                 }
             } catch (err) {
+                // Hide loader and show error
                 clearInterval(textInterval);
                 loaderOverlay.classList.remove('active');
-                showError("Network error. Could not connect to server.");
+                showError("Network error. Please try again.");
             }
         });
 
@@ -761,8 +1102,25 @@
             errDiv.innerText = msg;
             errDiv.style.display = 'block';
         }
+        // --- LEGAL MODALS LOGIC ---
+        function openLegal(type, e) {
+            e.preventDefault();
+            if(type === 'tos') document.getElementById('tosModal').classList.add('show');
+            if(type === 'privacy') document.getElementById('privacyModal').classList.add('show');
+        }
+
+        function closeLegal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function closeLegalOnBgClick(e, id) {
+            // Close only if the user clicks the dark overlay background, not the modal itself
+            if (e.target.id === id) {
+                closeLegal(id);
+            }
+        }
     </script>
-    <!-- Google Translate API Injector -->
+    <!-- Google Translate Injector -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
@@ -770,14 +1128,14 @@
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    <!-- UI Interaction & Translation Hijack Logic -->
+    <!-- UI Interaction & Hijack Logic -->
     <script>
-        // Toggle custom dropdown
+        // Toggle the custom dropdown
         function toggleLangMenu() {
             document.getElementById('langMenu').classList.toggle('show');
         }
 
-        // Hijack default select and force translate + layout flip
+        // Hijack Google Translate dropdown and force translation + layout flip
         function translatePage(langCode) {
             const select = document.querySelector('.goog-te-combo');
             if (select) {
@@ -786,18 +1144,19 @@
             }
             document.getElementById('langMenu').classList.remove('show');
 
-            // Auto switch RTL layout for right-to-left languages
+            // Auto switch to RTL layout for right-to-left languages
             if (['ar', 'fa', 'ur'].includes(langCode)) {
                 document.body.setAttribute('dir', 'rtl');
             } else {
                 document.body.setAttribute('dir', 'ltr');
             }
         }
+
         function openSupportModal() {
             document.getElementById('support-modal').classList.remove('hidden');
         }
 
-        // Close dropdown when clicking elsewhere
+        // Close dropdown when clicking anywhere else on the screen
         document.addEventListener('click', function(e) {
             if (!e.target.closest('#langBtn') && !e.target.closest('#langMenu')) {
                 document.getElementById('langMenu').classList.remove('show');
