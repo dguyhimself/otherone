@@ -599,7 +599,7 @@
             <button type="submit">Login</button>
 
             <div class="footer-text">
-                Need a node? <a href="/signup.html">Signup Here</a>
+                Need a node? <a href="/signup">Signup Here</a>
             </div>
         </form>
     </div>
@@ -742,7 +742,7 @@
                     localStorage.setItem('apex_token', result.token);
 
                     setTimeout(() => {
-                        window.location.href = '/dashboard.html';
+                        window.location.href = '/dashboard';
                     }, 1500);
                 } else {
                     clearInterval(textInterval);
