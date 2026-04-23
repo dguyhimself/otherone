@@ -7,7 +7,7 @@
             type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"
         ></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
         <link rel="icon" type="image/png" href="favicons.png">
         <title>PrimeNets</title>
         <style>
@@ -39,6 +39,10 @@
                 --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             }
 
+            html, body {
+                max-width: 100vw;
+                overflow-x: hidden; /* Permanently kills horizontal page wiggling */
+            }
             body {
                 font-family: var(--font-family);
                 background: var(--bg-body);
@@ -449,6 +453,7 @@
                 border: 1px dashed var(--border);
                 padding: 15px 0;
                 cursor: grab; /* Indicates it can be dragged on PC */
+                direction: ltr !important; /* Force Left-to-Right math for JS loop */
             }
 
             /* Hide the ugly scrollbar on both PC and Mobile */
@@ -1179,6 +1184,35 @@
                 .team-hero-card { border-radius: 0 0 24px 24px; padding: 30px 20px 40px 20px; margin-bottom: 15px; box-shadow: none; }
                 .team-milestones-wrapper { padding: 0 20px; margin-bottom: 15px; border-top: none; }
             }
+
+            /* --- VIRAL SOCIAL SHARE HUB --- */
+            .social-share-wrap { margin-top: 24px; position: relative; z-index: 2; }
+            .social-share-lbl { font-size: 0.75rem; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 800; margin-bottom: 12px; letter-spacing: 0.5px; }
+            .social-share-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+            .social-btn { 
+                width: 44px; height: 44px; border-radius: 50%; 
+                background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+                color: #fff; font-size: 1.25rem; display: flex; justify-content: center; align-items: center;
+                cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+                backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            }
+
+            .social-btn:hover { background: #fff; transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+            /* Brand-specific hover reveals */
+            .social-btn.tw:hover { color: #000000; }
+            .social-btn.fb:hover { color: #1877F2; }
+            .social-btn.tg:hover { color: #0088cc; }
+            .social-btn.wa:hover { color: #25D366; }
+            .social-btn.li:hover { color: #0A66C2; }
+            .social-btn.ig:hover { color: #E4405F; }
+            .social-btn.tt:hover { color: #000000; }
+
+            @media (max-width: 768px) {
+                .social-btn { width: 40px; height: 40px; font-size: 1.15rem; }
+                .social-share-row { gap: 8px; }
+            }
             /* --- NOTIFICATION BADGE UI --- */
             .notif-badge { 
                 position: absolute; 
@@ -1277,6 +1311,16 @@
                 /* Make the canvas edge-to-edge on mobile */
                 .network-canvas-wrapper { height: 450px; border-radius: 0; border-left: none; border-right: none; margin-left: -20px; width: calc(100% + 40px); }
             }
+            /* RTL Layout Fixes */
+            body[dir="rtl"] .input-icon-wrapper i { left: auto; right: 16px; }
+            body[dir="rtl"] .input-icon-wrapper input { padding-left: 16px; padding-right: 44px; }
+            body[dir="rtl"] .input-icon-wrapper .toggle-password { right: auto; left: 16px; }
+
+            /* Fix Edge-to-Edge Mobile Overflows in RTL */
+            @media (max-width: 768px) {
+                body[dir="rtl"] .slider-container { margin-left: 0 !important; margin-right: -20px !important; }
+                body[dir="rtl"] .network-canvas-wrapper { margin-left: 0 !important; margin-right: -20px !important; }
+            }
                         
         </style>        
     </head>
@@ -1369,7 +1413,8 @@
                 <p>Real-time automated packaging and order routing through partner warehouses.</p>
 
                 <!-- ID added here for JS targeting -->
-                <div class="slider-container" id="drag-slider">
+                <!-- Force LTR so browser scroll math never breaks during language swaps -->
+                <div class="slider-container" id="drag-slider" dir="ltr">
                     <div class="slider-track">
                         <!-- SET 1 (Verified High-Res E-Commerce Images) -->
                         <img src="https://images.unsplash.com/photo-1520881363902-a0ff4e722963?q=80&w=600&auto=format&fit=crop" alt="E-Commerce Boxes">
@@ -1706,7 +1751,7 @@
                     <!-- Dark Mode Volume Tracker -->
                     <div class="team-vol-wrap">
                         <div class="team-vol-lbl">
-                            <span>Team Volume</span>
+                            <span>Team Profit</span>
                             <span class="team-vol-val" id="team-volume">$0.00</span>
                         </div>
                         <div class="team-vol-bar-bg">
@@ -1721,6 +1766,18 @@
                     </div>
 
                     <button class="team-btn-copy" onclick="copyInviteLink()"><i class="fa-solid fa-copy"></i> Copy Referral Link</button>
+                    <!-- Viral Social Accelerators -->
+                    <div class="social-share-wrap">
+                        <div class="social-share-row">
+                            <button class="social-btn wa" onclick="shareViral('wa')" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button class="social-btn tg" onclick="shareViral('tg')" title="Telegram"><i class="fa-brands fa-telegram"></i></button>
+                            <button class="social-btn tw" onclick="shareViral('x')" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></button>
+                            <button class="social-btn fb" onclick="shareViral('fb')" title="Facebook"><i class="fa-brands fa-facebook-f"></i></button>
+                            <button class="social-btn li" onclick="shareViral('li')" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></button>
+                            <button class="social-btn ig" onclick="shareViral('ig')" title="Instagram"><i class="fa-brands fa-instagram"></i></button>
+                            <button class="social-btn tt" onclick="shareViral('tt')" title="TikTok"><i class="fa-brands fa-tiktok"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2499,7 +2556,7 @@
                     setTimeout(() => loadTree(), 100); 
                 }
             }
-            if (!token) window.location.href = "/login.html";
+            if (!token) window.location.href = "/login";
             let currentTrc20Address = "";
             let currentEvmAddress = "";
             let myPersonalDeposits = 0;
@@ -2734,7 +2791,7 @@
                 toggleLoader(true, "Logging Out...");
                 localStorage.removeItem("apex_token");
                 setTimeout(() => {
-                    window.location.href = "/login.html";
+                    window.location.href = "/login";
                 }, 1200); // Gives the loader time to play before redirect
             }
 
@@ -3278,6 +3335,14 @@
                 const container = document.getElementById('toast-container');
                 if (!container) return;
 
+                // DUPLICATE PREVENTION: Scan currently visible toasts
+                const activeMessages = container.querySelectorAll('.toast-msg');
+                for (let i = 0; i < activeMessages.length; i++) {
+                    if (activeMessages[i].innerText === message) {
+                        return; // Abort silently if the exact same message is already on screen
+                    }
+                }
+
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
 
@@ -3435,6 +3500,62 @@
                     networkViewport.scrollLeft = mapScrollLeft - walkX;
                     networkViewport.scrollTop = mapScrollTop - walkY;
                 });
+            }
+            // --- VIRAL SOCIAL SHARE ENGINE ---
+            function shareViral(platform) {
+                const partnerId = document.getElementById("invite-code").innerText;
+
+                if (partnerId === "Loading..." || !partnerId) {
+                    showToast("Please wait for your profile to load.", "error", "Action Denied");
+                    return;
+                }
+
+                // 1. Generate Link & High-Converting Pitch
+                const baseUrl = window.location.origin;
+                const inviteLink = `${baseUrl}/signup.html?partner=${partnerId}`;
+                const pitchText = "I've started earning daily automated profits on PrimeNets Global. Join my operator network and let's scale our e-commerce team together. Start here:";
+
+                // Encode for safe URL transmission
+                const encodedLink = encodeURIComponent(inviteLink);
+                const encodedMsg = encodeURIComponent(pitchText);
+                const fullPayload = encodeURIComponent(`${pitchText}\n\n${inviteLink}`);
+
+                let targetUrl = '';
+
+                // 2. Route to the correct platform API
+                switch(platform) {
+                    case 'wa': // WhatsApp
+                        targetUrl = `https://api.whatsapp.com/send?text=${fullPayload}`;
+                        break;
+                    case 'tg': // Telegram
+                        targetUrl = `https://t.me/share/url?url=${encodedLink}&text=${encodedMsg}`;
+                        break;
+                    case 'x':  // X (Twitter)
+                        targetUrl = `https://twitter.com/intent/tweet?text=${encodedMsg}&url=${encodedLink}`;
+                        break;
+                    case 'fb': // Facebook
+                        targetUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`;
+                        break;
+                    case 'li': // LinkedIn
+                        targetUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedLink}`;
+                        break;
+                    case 'ig': // Instagram Bypass
+                    case 'tt': // TikTok Bypass
+                        const appName = platform === 'ig' ? 'Instagram' : 'TikTok';
+                        const webUrl = platform === 'ig' ? 'https://instagram.com' : 'https://tiktok.com';
+
+                        // Copy payload directly to clipboard since IG/TT block text injection
+                        navigator.clipboard.writeText(`${pitchText}\n\n${inviteLink}`).then(() => {
+                            showToast(`Promo script copied! Opening ${appName}... Paste the text to share.`, "success", "Ready to Post");
+                            setTimeout(() => { window.open(webUrl, '_blank'); }, 1800);
+                        });
+                        return; // Exit here for IG/TT
+                }
+
+                // 3. Execute the standard share launch
+                if (targetUrl) {
+                    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                }
             }
         </script>
     </body>
