@@ -1,5 +1,4 @@
 require('dotenv').config();
-const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -10,12 +9,15 @@ const cron = require('node-cron');
 const { TronWeb } = require('tronweb');
 const axios = require('axios');
 const { ethers } = require('ethers');
+const express = require('express');
 
 const app = express();
 app.set('trust proxy', 1); // <--- Add this line!
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+
+app.use(express.static('public', { extensions: ['html'] }));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
